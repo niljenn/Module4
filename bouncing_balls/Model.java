@@ -49,6 +49,14 @@ class Model {
 
 		}
 	}
+
+	void rectToPolar(){
+
+	}
+
+	void polarToRect(){
+		
+	}
 	
 	/**
 	 * Simple inner class describing balls.
