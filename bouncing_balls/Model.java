@@ -50,12 +50,41 @@ class Model {
 		}
 	}
 
-	void rectToPolar(){
+		
+	double rectToPolar(double x, double y){
+		// r = sqrt(x^2 + y^2)
+		// p = atan2(y,x)
 
+		double r = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
+		double p;
+		
+		if (y >= 0 && r != 0){
+			p = Math.acos(x/r);
+			return p;
+
+		}
+		else if (y < 0){
+			p = - Math.acos(x/r);
+			return p;
+		}
+
+		else if ( r == 0 ){
+			//throw new Exception("undefined");
+			System.out.println("undefined");
+			throw new IllegalArgumentException("undefined when r=0");
+		}
+		return 0;
+		
 	}
 
-	void polarToRect(){
+	void polarToRect(double x, double y){
+		// x = r*cos(p) and y = r*sin(p)
+		double p = rectToPolar(x, y);
+		double r = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
 		
+		x = r * Math.cos(p);
+		y = r * Math.sin(p);
+	
 	}
 	
 	/**
