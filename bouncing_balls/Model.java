@@ -39,6 +39,9 @@ class Model {
 			if (b.y < b.radius || b.y > areaHeight - b.radius) {
 				b.vy *= -1;
 			}
+			if (b.y < b.radius) {
+				b.y = b.radius; // make sure balls don't go through floor
+			}			
 		}
 
 		// separate ball collision handling
@@ -55,9 +58,14 @@ class Model {
 					// convert velocities of b1 and b2 from rect to polar
 					double[] polarV1 = rectToPolar(b1.vx, b1.vy);
 					double[] polarV2 = rectToPolar(b2.vx, b2.vy);
-	
-					// swap velocities in polar coordinates, directions of velocities are exchanged while magnitude remains the same
-					polarV1[0] = polarV2[0];
+					          
+                    // swap and reverse velocities
+                    double tempVx = polarV1[0];
+                    double tempVy = polarV1[1];
+                    polarV1[0] = polarV2[0];
+                    polarV1[1] = polarV2[1];
+                    polarV2[0] = tempVx;
+                    polarV2[1] = tempVy;
 	
 					// convert velocities of b1 and b2 back to rect coordinates
 					double[] rectV1 = polarToRect(polarV1[0], polarV1[1]);
