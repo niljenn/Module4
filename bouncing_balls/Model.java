@@ -1,4 +1,7 @@
 package bouncing_balls;
+import java.lang.Math;
+import Jama.Matrix;
+
 
 /**
  * The physics model.
@@ -23,8 +26,8 @@ class Model {
 		
 		// Initialize the model with a few balls
 		balls = new Ball[2];
-		balls[0] = new Ball(width / 3, height * 0.9, 1.2, 1.6, 0, g, 0.2);
-		balls[1] = new Ball(2 * width / 3, height * 0.7, -0.6, 0.6, 0, g, 0.3);
+		balls[0] = new Ball(width / 3, height * 0.9, 1.2, 1.6, 0, g, 2,  0.2);
+		balls[1] = new Ball(2 * width / 3, height * 0.7, -0.6, 0.6, 0, g, 3, 0.3);
 	}
 
 	void step(double deltaT) {
@@ -53,29 +56,52 @@ class Model {
 				double dx = b2.x - b1.x;	// distance in x axis
 				double dy = b2.y - b1.y;	// distance in y axis
 				double distance = Math.sqrt(dx * dx + dy * dy); 	// pythagoras theorem
+
 	
 				if (distance < b1.radius + b2.radius) {		// if they have collided:
 					// convert velocities of b1 and b2 from rect to polar
 					double[] polarV1 = rectToPolar(b1.vx, b1.vy);
 					double[] polarV2 = rectToPolar(b2.vx, b2.vy);
-					          
+
+					double beforeI = b1.m * polarV1[1] + b2.m * polarV2[1];
+					double beforeR = polarV2[1] - polarV1[1];
+
+					double new_v1 = beforeR + ((beforeI - beforeR * b1.m)/(b1.m + b2.m));
+					double new_v2 = (beforeI - beforeR * b1.m ) / (b1.m + b2.m);
+
+					
+
                     // swap and reverse velocities
-                    double tempVx = polarV1[0];
-                    double tempVy = polarV1[1];
-                    polarV1[0] = polarV2[0];
-                    polarV1[1] = polarV2[1];
-                    polarV2[0] = tempVx;
-                    polarV2[1] = tempVy;
-	
+                    /*double tempP = polarV1[0]; vinkel b1
+                    double tempR = polarV1[1];   radie b1
+					
+                    polarV1[0] = polarV2[0];  vinkel b1 = vinkel b2
+                    polarV1[1] = polarV2[1];  radie b1 = radie b2
+                    polarV2[0] = tempP;       vinkel b2 = vinkel b1
+                    polarV2[1] = tempR;       radie b2 = radie b1
+					*/
+
+					/*double tempP = polarV1[0];
+					double tempP2 = polarV2[0];
+
+					polarV1[0] = polarV2[0]; //vinkel b1 = vinkel b2
+					polarV2[0] = polarV1[0];
+
+					polarV2[0] = tempP;  
+					polarV1[0] = tempP2;*/ 
+
 					// convert velocities of b1 and b2 back to rect coordinates
-					double[] rectV1 = polarToRect(polarV1[0], polarV1[1]);
-					double[] rectV2 = polarToRect(polarV2[0], polarV2[1]);
+					double[] rectV1 = polarToRect(polarV1[0], new_v1);
+					double[] rectV2 = polarToRect(polarV2[0], new_v2);
+					
 	
 					// update velocities of b1 and b2
 					b1.vx = rectV1[0];
 					b1.vy = rectV1[1];
 					b2.vx = rectV2[0];
 					b2.vy = rectV2[1];
+
+					
 				}
 			}
 		
@@ -134,19 +160,20 @@ class Model {
 	 */
 	class Ball {
 		
-		Ball(double x, double y, double vx, double vy, double ax, double gy, double r) {
+		Ball(double x, double y, double vx, double vy, double ax, double gy, double m, double r) {
 			this.x = x; // x(t) (old) position
 			this.y = y; // y(t) (old) position 
 			this.vx = vx; // x'(t) velocity in x
 			this.vy = vy; // y'(t) velocity in y
 			this.ax = ax; // x''(t) acceleration in x
 			this.gy = gy; // y''(t) acceleration in y
+			this.m = m;
 			this.radius = r;
 		}
 
 		/**
 		 * Position, speed, and radius of the ball. You may wish to add other attributes.
 		 */
-		double x, y, vx, vy, ax, gy, radius;
+		double x, y, vx, vy, ax, gy, m, radius;
 	}
 }
